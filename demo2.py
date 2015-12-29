@@ -12,13 +12,13 @@ pwmA1="P9_21"
 pwmA2="P9_22"
 pwmB1="P9_14"
 pwmB2="P9_16"
-pwmC="P9_42"
+pwmC="P8_13"
 pwmS=13
 PWM.start(pwmA1,50)
 PWM.start(pwmA2,0)
 PWM.start(pwmB1,0)
 PWM.start(pwmB2,50)
-PWM.start(pwmC,50,50,0)
+PWM.start(pwmC,13,50,0)
 xexloc=160
 xloc=160
 yloc=120
