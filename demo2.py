@@ -64,8 +64,8 @@ while(1):
         		elif xloc<155:
             			pwmS=pwmS*(1.0-(155-xloc)/4000)
         		elif xloc>165:
-            			pwmS=pwmS*(1.0-(xloc-165)/4000)#465)
-			elif xloc>190
+            			pwmS=pwmS*(1.0-(xloc-165)/4000)
+			elif xloc>190:
 				pwmS=pwmS*(1.0-(xloc-165)/2000) 
 		elif xexloc<155:
 			pwmS=pwmS*(1.0-(xloc-165)/4000)
@@ -84,7 +84,7 @@ while(1):
 		print(x)
 		x=x+1
 		n=1
-	elif:
+	else:
 		n=n+1	
 
 	#else:
@@ -92,3 +92,4 @@ while(1):
             	#	PWM.set_duty_cycle(pwmA,100.0)
 		#elif xloc<40:
            	# 	PWM.set_duty_cycle(pwmB,100.0)
+PWM.cleanup()
