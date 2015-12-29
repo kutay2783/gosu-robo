@@ -7,6 +7,7 @@ while(1)
 	if pwmS="q":
 		break
 	else:
-		PWM.start(pwmC,pwmS,50,0)
+		PWM.set_duty_cycle(pwmC,pwmS)
 
-PWM.start(pwmC,13,50,0)
+PWM.stop(pwmC)
+#PWM.cleanup()
