@@ -6,10 +6,16 @@ kapakLower = (86, 120, 73)
 kapakUpper = (106, 255, 255)
 ### GPIO ###
 #PWM.start(channel, duty, freq=2000, polarity=0)
-pwmA="P9_22"
-pwmB="P9_21"
-PWM.start(pwmA, 50)
-PWM.start(pwmB, 50)
+pwmA1="P9_21"
+pwmA2="P9_22"
+pwmB1="P9_14"
+pwmB2="P9_16"
+pwmC="P9_42"
+PWM.start(pwmA1, 50)
+PWM.start(pwmA2, 50)
+PWM.start(pwmB1, 50)
+PWM.start(pwmB2, 50)
+PWM.start(pwmC,50,50,0)
 
 camera = cv2.VideoCapture(0)
 camera.set(3,320)
@@ -23,21 +29,27 @@ while(1):
 	mask = cv2.inRange(hsv, kapakLower, kapakUpper)
 	mask = cv2.erode(mask, kernel, iterations=1)
 	mask = cv2.dilate(mask, kernel, iterations=1)
-	
+	cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
 	xloc=160
     	yloc=120
-    	mmnt = cv2.moments(mask)
-    	if mmnt['m00']!=0:
-        	xloc = mmnt['m10']/mmnt['m00']
-        	yloc = mmnt['m01']/mmnt['m00']
-        	#print(xloc,yloc)
-		print(mmnt['m00'])
-        	if yloc<120:
-           		pwmL=(120.0-yloc)*(5.0/6.0)
-            		pwmR=pwmL
-        	else: 
-           		pwmL=0
-            		pwmR=0
+    	#mmnt = cv2.moments(mask)
+    	if len(cnts) > 0:
+    		c= max(cnts, key=cv2.contourArea)
+		((xloc, yloc), radius) = cv2.minEnclosingCircle(c)
+		print('Enclosing circle:',xloc,yloc,radius)
+		M = cv2.moments(c)
+    	#if mmnt['m00']!=0:
+        	xloc = M['m10']/M['m00']
+        	yloc = M['m01']/M['m00']
+        	
+		##print('Moment:',M['m00'])
+		print('Moment:',xloc,yloc)
+        	#if yloc<120:
+           	#	pwmL=(120.0-yloc)*(5.0/6.0)
+            	#	pwmR=pwmL
+        	#else: 
+           	#	pwmL=0
+            	#	pwmR=0
 		
         	if xloc<155:
             		pwmL=pwmL*(1.0-(155-xloc)/465)
