@@ -2,8 +2,8 @@ import numpy as np
 import cv2
 import Adafruit_BBIO.PWM as PWM
 
-kapakLower = (10, 130, 100)
-kapakUpper = (20, 206, 255)
+kapakLower = (86, 120, 73)
+kapakUpper = (106, 255, 255)
 ### GPIO ###
 #PWM.start(channel, duty, freq=2000, polarity=0)
 pwmA="P9_22"
