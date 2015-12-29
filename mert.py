@@ -1,0 +1,12 @@
+import Adafruit_BBIO.PWM as PWM
+pwmC="P8_13"
+pwmS=13
+PWM.start(pwmC,pwmS,50,0)
+while(1)
+	pwmS=input('Enter PWM: ')
+	if pwmS="q":
+		break
+	else:
+		PWM.start(pwmC,pwmS,50,0)
+
+PWM.start(pwmC,13,50,0)
