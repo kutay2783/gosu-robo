@@ -81,15 +81,15 @@ void roundAround (int var){
   while(hitsLeft<var){    
   if (hitsLeft > hitsRight){
     myPIDround1.Compute();
-    analogWrite(E1, Output3);
-    analogWrite(E2, 125);}
+    analogWrite(motorPWM3, Output3);
+    analogWrite(motorPWM1, 125);}
   if (hitsRight > hitsLeft){
     myPIDround2.Compute();
-    analogWrite(E1, 125);
-    analogWrite(E2, Output4);}
+    analogWrite(motorPWM3, 125);
+    analogWrite(motorPWM1, Output4);}
   if (hitsLeft == hitsRight){
-    analogWrite(E1, Output3);
-    analogWrite(E2, Output4);}
+    analogWrite(motorPWM3, Output3);
+    analogWrite(motorPWM1, Output4);}
     } 
   
   }
@@ -98,20 +98,20 @@ void goStraight(int var){
   hitsRight=0;
   Input3 = hitsLeft - hitsRight ;
   Input4 = hitsRight - hitsLeft ; 
-  analogWrite(motorPWM1, 125);
-  analogWrite(motorPWM4, 125);
+  analogWrite(motorPWM1, 125); //sag kirmizi
+  analogWrite(motorPWM4, 125); //sol kirmizi
   while(hitsLeft<var){    
   if (hitsLeft > hitsRight){
     myPID3.Compute();
-    analogWrite(E1, Output3);
-    analogWrite(E2, 125);}
+    analogWrite(motorPWM4, Output3);
+    analogWrite(motorPWM1, 125);}
   if (hitsRight > hitsLeft){
     myPID4.Compute();
-    analogWrite(E1, 125);
-    analogWrite(E2, Output4);}
+    analogWrite(motorPWM4, 125);
+    analogWrite(motorPWM1, Output4);}
   if (hitsLeft == hitsRight){
-    analogWrite(E1, Output3);
-    analogWrite(E2, Output4);}
+    analogWrite(motorPWM4, Output3);
+    analogWrite(motorPWM1, Output4);}
     }  
   }
 
@@ -124,4 +124,3 @@ void countRight()
 {
  hitsRight++;
 }
-
