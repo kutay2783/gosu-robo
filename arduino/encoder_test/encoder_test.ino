@@ -1,52 +1,52 @@
  
-#define I1 4  // Control pin 1 for motor 1 sol geri
-#define I2 5  // Control pin 2 for motor 1 sol ileri
-#define I3 6  // Control pin 1 for motor 2 sag ileri
-#define I4 7  // Control pin 2 for motor 2 sag geri
+#define motorLBA 4  // Control pin 1 for motor 1 sol geri
+#define motorLFA 5  // Control pin 2 for motor 1 sol ileri
+#define motorRFA 6  // Control pin 1 for motor 2 sag ileri
+#define motorRBA 7  // Control pin 2 for motor 2 sag geri
 
-volatile int hits1 = 0;
-volatile int hits2 = 0;
-int var1, var2;
+volatile int hitsLeft = 0;
+volatile int hitsRight = 0;
+int analogLeft, analogRight;
 void setup() {
   Serial.begin(9600);
-  attachInterrupt(4, count1, CHANGE);
-  attachInterrupt(5, count2, CHANGE); 
+  attachInterrupt(4, countLeft, CHANGE);
+  attachInterrupt(5, countRight, CHANGE); 
   pinMode(0, INPUT);
   pinMode(1, INPUT);
-  pinMode(I1, OUTPUT);
-  pinMode(I2, OUTPUT);
-  pinMode(I3, OUTPUT);
-  pinMode(I4, OUTPUT);
-  analogWrite(I1, 0);
-  analogWrite(I2, 0);
-  analogWrite(I3, 0);
-  analogWrite(I4, 100);
+  pinMode(motorLBA, OUTPUT);
+  pinMode(motorLFA, OUTPUT);
+  pinMode(motorRFA, OUTPUT);
+  pinMode(motorRBA, OUTPUT);
+  analogWrite(motorLBA, 0);
+  analogWrite(motorLFA, 100);
+  analogWrite(motorRFA, 100);
+  analogWrite(motorRBA, 0);
   }
 
 
 void loop() {
   Serial.print('(');
-  Serial.print(hits1);
+  Serial.print(hitsLeft);
   Serial.print(',');
-  Serial.print(hits2);
+  Serial.print(hitsRight);
   Serial.println(')');
   
-  var1=analogRead(0);
-  var2=analogRead(1);
+  analogLeft=analogRead(0);
+  analogRight=analogRead(1);
   Serial.print("analog readings are:");
-  Serial.print(var1);
+  Serial.print(analogLeft);
   Serial.print(',');
-  Serial.println(var2);
+  Serial.println(analogRight);
   delay(1000);
 }
 
-void count1()
+void countLeft()
 {
- hits1++;
+ hitsLeft++;
 }
 
-void count2()
+void countRight()
 {
- hits2++;
+ hitsRight++;
 }
 
