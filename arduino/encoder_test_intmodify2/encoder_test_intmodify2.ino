@@ -7,10 +7,13 @@
 volatile int hitsLeft = 0;
 volatile int hitsRight = 0;
 int analogLeft, analogRight;
+long debouncing_time =25;
+volatile unsigned long last_microsLeft, last_microsRight;
+
 void setup() {
   Serial.begin(9600);
-  attachInterrupt(0, countLeft, CHANGE);
-  attachInterrupt(1, countRight, CHANGE); 
+  attachInterrupt(4, countLeft, CHANGE);
+  attachInterrupt(5, countRight, CHANGE); 
   pinMode(0, INPUT);
   pinMode(1, INPUT);
   pinMode(motorLBA, OUTPUT);
@@ -42,11 +45,19 @@ void loop() {
 
 void countLeft()
 {
- hitsLeft++;
+  if((long)(micros()-last_microsLeft)>=debouncing_time*1000) {
+  InterruptLeft();
+  last_microsLeft=micros(); }
 }
+void InterruptLeft() {
+   hitsLeft++; }
 
 void countRight()
 {
- hitsRight++;
+  if((long)(micros()-last_microsRight)>=debouncing_time*1000) {
+  InterruptRight();
+  last_microsRight=micros(); }
 }
+void InterruptRight() {
+   hitsRight++; }
 

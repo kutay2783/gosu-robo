@@ -2,7 +2,7 @@
 
 #define motorLBA 4  // Control pin 1 for motor 1 sol geri
 #define motorLFA 5  // Control pin 2 for motor 1 sol ileri
-#define motorRFA 6  // Contro  l pin 1 for motor 2 sag ileri
+#define motorRFA 6  // Control pin 1 for motor 2 sag ileri
 #define motorRBA 7  // Control pin 2 for motor 2 sag geri
 
 volatile int hitsRight = 0;
@@ -13,8 +13,10 @@ double SetPoint1, SetPoint2, SetPoint3, SetPoint4;
 double Input1, Input2, Input3, Input4;
 double  Output1, Output2, Output3, Output4;
 int encoderDifference; 
-PID myPIDStraight1(&Input1, &Output1, &SetPoint1, 30, 80, 40, DIRECT);
-PID myPIDStraight2(&Input2, &Output2, &SetPoint2, 30, 80, 40, DIRECT);
+long debouncing_time =25;
+volatile unsigned long last_microsLeft, last_microsRight;
+PID myPIDStraight1(&Input1, &Output1, &SetPoint1, 2, 5, 1, DIRECT);
+PID myPIDStraight2(&Input2, &Output2, &SetPoint2, 2, 5, 1, DIRECT);
 
 void setup() {
   Serial.begin(9600);
@@ -88,11 +90,19 @@ void loop() {
 
 void countLeft()
 {
- hitsLeft++;
+  if((long)(micros()-last_microsLeft)>=debouncing_time*1000) {
+  InterruptLeft();
+  last_microsLeft=micros(); }
 }
+void InterruptLeft() {
+   hitsLeft++; }
 
 void countRight()
 {
- hitsRight++;
+  if((long)(micros()-last_microsRight)>=debouncing_time*1000) {
+  InterruptRight();
+  last_microsRight=micros(); }
 }
+void InterruptRight() {
+   hitsRight++; }
 

@@ -10,14 +10,13 @@ kapakLower = (10, 145, 140)
 kapakUpper = (46, 255, 255)
 ttt=0
 time1=time.time()
-camera = cv2.VideoCapture(1)
+camera = cv2.VideoCapture(0)
 camera.set(3,320)
 camera.set(4,240)
 camera.set(5,10)
 # keep looping
 while True:
 	(grabbed, frame) = camera.read()
-	frame = imutils.resize(frame, width=600)
 	blurred = cv2.GaussianBlur(frame, (11, 11), 0)
 	hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
 	

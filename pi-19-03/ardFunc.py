@@ -1,11 +1,11 @@
 from serial import Serial
 import serial
 import time
-ser = Serial('/dev/ttyACM0',9600)
+#ser = Serial('/dev/ttyACM1',9600)
 def startCom():
     ser.write(chr (1))
     while 1:
-        time.sleep (2)
+        time.sleep (1)
         ardMsg = ser.readline()
         ardMsg = int (ardMsg)
         print(ardMsg)
@@ -43,7 +43,7 @@ def roundCW(hitsNumber):
         time.sleep (2)
         ardMsg = ser.readline()
         ardMsg = int (ardMsg)
-        print(ardMsg)
+        
         if (ardMsg==3):
             print('CW complete')
             break;            
@@ -57,7 +57,8 @@ def roundCCW(hitsNumber):
         time.sleep (2)
         ardMsg = ser.readline()
         ardMsg = int (ardMsg)
-        if (ardMsg==2):
+        if (ardMsg==40):
+            print('CCW first HS')
             break;
     temp=hitsNumber//250
     ser.write(chr(temp))
@@ -65,7 +66,8 @@ def roundCCW(hitsNumber):
         time.sleep (2)
         ardMsg = ser.readline()
         ardMsg = int (ardMsg)
-        if (ardMsg==2):
+        if (ardMsg==41):
+            print('CCW second HS')
             break;
     temp=hitsNumber%250
     ser.write(chr(temp))
@@ -73,7 +75,8 @@ def roundCCW(hitsNumber):
         time.sleep (2)
         ardMsg = ser.readline()
         ardMsg = int (ardMsg)
-        if (ardMsg==3):
+        if (ardMsg==43):
+            print('CCW complete')
             break;            
     return;
 
@@ -85,7 +88,8 @@ def goStraight(hitsNumber):
         time.sleep (2)
         ardMsg = ser.readline()
         ardMsg = int (ardMsg)
-        if (ardMsg==2):
+        if (ardMsg==30):
+            print('GS first HS')
             break;
     temp=hitsNumber//250
     ser.write(chr(temp))
@@ -93,7 +97,8 @@ def goStraight(hitsNumber):
         time.sleep (2)
         ardMsg = ser.readline()
         ardMsg = int (ardMsg)
-        if (ardMsg==2):
+        if (ardMsg==31):
+            print('GS second HS')
             break;
     temp=hitsNumber%250
     ser.write(chr(temp))
@@ -101,7 +106,8 @@ def goStraight(hitsNumber):
         time.sleep (2)
         ardMsg = ser.readline()
         ardMsg = int (ardMsg)
-        if (ardMsg==3):
+        if (ardMsg==33):
+            print('GS complete')
             return 1;
         elif(ardMsg==4):
             return -1;

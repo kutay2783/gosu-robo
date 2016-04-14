@@ -8,14 +8,14 @@ from serial import Serial
 import serial
 import time
 
-ser = Serial('/dev/ttyACM0',9600)
-time.sleep (5)
+ser = Serial('/dev/ttyACM1',9600)
+time.sleep (1)
 startCom ()
-time.sleep (2)
-roundCW(100)
-time.sleep (2)
-roundCWW (10)
-goStraight(20)
+time.sleep (1)
+#roundCW(50)
+#time.sleep (1)
+roundCCW (25)
+goStraight(15)
 asd=callHits()
 print(asd)
 
