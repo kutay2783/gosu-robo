@@ -14,9 +14,9 @@ findTarget()
 
 #roundCW(50)
 #time.sleep (1)
-roundCCW (25)
-goStraight(15)
-asd=callHits()
-print(asd)
+#roundCCW (25)
+goStraight(100)
+#asd=callHits()
+#print(asd)
 
 
