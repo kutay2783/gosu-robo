@@ -23,6 +23,8 @@ def Decision ():
     while TRUE:
         if(locationArray[0]and locationArray[1] and locationArray[2])!=0:
             break;
+        if(locationArray[4]>=360):
+            break;
         degree = cameraRobots()  
         if inputCamera !=-1 : ###duzelt burayi kutaya gore!!!
             updateArray(degree+locationArray[4],1)          
@@ -32,8 +34,11 @@ def Decision ():
             updateArray(distance,4)
         roundCW(turnDegree)
         locationArray[4]+=turnDegree
-    turnFinalDirection()
-    return 0;
+    decision=decide2Go()
+    if decision == -1:
+        return -1;
+    else:
+        return 1;
 #########Update Array#####
 def updateArray(value,order):
     if(order==1):
@@ -54,27 +59,57 @@ def updateArray(value,order):
             print 'more than one target is detected ERROR!!'    
     return 0;    
     
-########Decide and Turn The Direction#########    
-def turnFinalDirection():
-    if (abs((locationArray[0]-locationArray[2])%360)<50) or (abs(locationArray[2]-locationArray[1])<50):  ##target close to robots
-        if ((locationArray[2]-locationArray[0])%360<50) or ((locationArray[1]-locationArray[2])%360<50) : ##target between 2 robots
-            if locationArray[1]>locationArray[0]:                     ##if 2.robot last seen  
-                roundCCW (locationArray[4]-locationArray[1]+(locationArray[1]-locationArray[0])/2) ##ccw is shortest way
-            else :
-                if(locationArray[4]-locationArray[0])< (locationArray[1]-locationArray[0])/2)
-                    roundCW (locationArray[4]+ ((locationArray[1]-locationArray[0])%360)/2)
-        else :
-            CriticalAngle=getCriticalAngle()
-            
-            
+########Decide and Turn The Direction######### 
+def decide2Go():
+    if (locationArray[1]-locationArray[0]<100):
+        if(locationArray[2]>=locationArray[0] and locationArray[2]<=locationArrauy[1]):
+            turnDirection(1)
+        elif ((locationArray[0]-locationArray[2])%360)<50: 
+            criticalAngle=getCriticalAngle()
+            if((locationArray[0]-locationArray[2])%360)+(locationArray[1]-locationArray[0])/2)<criticalAngle:
+                turnDirection(1)
+            else:
+                return -1;
+        elif((locationArray[2]-locationArray[1])%360)<50 :
+            criticalAngle=getCriticalAngle()
+            if((locationArray[2]-locationArray[1])%360)+(locationArray[1]-locationArray[0])/2 <criticalAngle:
+                turnDirection(1)
+            else:
+                return -1;
     else:
-        return -1;
-
-
-
-
-def turnFinalDirection():
-    
+        if(locationArray[2]-locationArray[0])>50 and (locationArray[1]-locationArray[0]>50):
+            return -1;
+        elif (locationArray[2]<=locationArray[0]) or (locationArray[2]>=locationArray[1]):
+            turnDirection(2)
+        elif (locationArray[2]-locationArray[0]<50):
+            criticalAngle=getCriticalAngle()
+            if(locationArray[2]-locationArray[0])+((locationArray[0]-locationArray[1])%360)/2<criticalAngle:
+                turnDirection(2)
+            else:
+                return -1;
+        elif(locationArray[1]-locationArray[2]<50):
+            criticalAngle=getCriticalAngle()
+            if(locationArray[1]-locationArray[2])+((locationArray[0]-locationArray[1])%360)/2 <criticalAngle:
+                turnDirection(2)
+            else:
+                return -1;
+#### turn Direction Algorith ####
+def turnDirection (direction):
+    if (direction==1):  ##case#1 between 2 roobts angle is 60 
+        if(locationArray[4]-(locationArray[1]+locationArray[0]))/2<180: 
+            roundCCW(locationArray[4]-(locationArray[1]+locationArray[0])/2)
+        else:
+            roundCW( 360 - locationArray[4]+ ((locationArray[1]+locationArray[0])/2) )
+    else:
+        if((locationArray[0]+locationArray[1])%360)<70:
+            roundCW(((((locationArray[0]+locationArray[1])%360)/2)-locationArray[4])%360)
+        elif ((locationArray[0]+locationArray[1])%360)>290:
+            if( locatoinArray[4]> locationArray[1] + ((locationArray[0]-locationArray[1])%360)/2 ):
+                roundCCW( locatoinArray[4]- locationArray[1] + ((locationArray[0]-locationArray[1])%360)/2 )
+            else:
+                roundCW( locatoinArray[4]- locationArray[1] + ((locationArray[0]-locationArray[1])%360)/2 )
+    return 1;
+         
     
 
 
