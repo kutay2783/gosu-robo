@@ -10,21 +10,21 @@
 
 #define motorRFA 4  // sag motor sari pin//sag ileri aktif
 #define motorRBA 5  // sag motor siyah pin
-#define motorLBA 6  // sol motor kirmizi pin
-#define motorLFA 7  // sol motor siyah pin
+#define motorLBA 7  // sol motor kirmizi pin
+#define motorLFA 6  // sol motor siyah pin
 #define motorSpeed 125
 volatile int hitsRight = 0;
 volatile int hitsLeft = 0;
 long distance;
-int raspMessage,roundDirection,var, zot, temp1, temp2; 
+int raspMessage,roundDirection,var, zot, temp1, temp2,projeStart; 
 double SetPointStraight=0, SetPointRound=0;
 double InputStraight, InputRound;
 double  OutputStraight, OutputRound;
-int encoderDifference; 
+int encoderDifference,motorSpeedLast=motorSpeed; 
 volatile unsigned long last_microsRight, last_microsLeft;
 long debouncing_time =25;
-PID myPIDStraight(&InputStraight, &OutputStraight, &SetPointStraight, 1, 4, 2, DIRECT);
-PID myPIDRound(&InputRound, &OutputRound, &SetPointRound, 5, 4, 2, DIRECT);
+PID myPIDStraight(&InputStraight, &OutputStraight, &SetPointStraight, 13, 0.2, 0.5, DIRECT);
+PID myPIDRound(&InputRound, &OutputRound, &SetPointRound, 13, 0.2, 0.5, DIRECT);
 
 void setup() {
   Serial.begin(9600);  
@@ -46,35 +46,44 @@ void setup() {
   analogWrite(motorLFA, 0);*/
   digitalWrite(controlLed, LOW);
   digitalWrite (trigPin,LOW);
-  
-  myPIDStraight.SetMode(AUTOMATIC); 
-  myPIDRound.SetMode(AUTOMATIC); 
-   
  
   }
 
 void loop() {
-
+ 
    while (true){
      if(raspRX()==1)
            break;     
   }
-   raspTX(2);
+  while (true){
+    projeStart=digitalRead(echoPin);
+    if(projeStart==1){
+      raspTX(2);
+      break;}
+  }
    
+    while (true){
      
         switch (raspRX()){
         case 5:  roundAroundCW();
+                  break;
         case 6:  roundAroundCCW();
+                  break;
         case 7:  goStraight();
+                  break;
         case 8:  incRightRasp();
+                  break;
         case 9:  incLeftRasp();
+                  break;
         case 10: returnHits();
+                  break;
         }
-    
+     }
   
 }
 ////////////Round CW///////////
-void roundAroundCW (){  
+void roundAroundCW (){ 
+ myPIDRound.SetMode(AUTOMATIC);  
   raspTX(20);
   temp1=raspRX();   
   raspTX(21);  
@@ -87,21 +96,9 @@ void roundAroundCW (){
   analogWrite(motorLFA, 125);
   digitalWrite(controlLed,HIGH);
   while((hitsLeft<var) &&  (hitsRight<var)){ 
-    InputRound = hitsLeft - hitsRight ;   
-    if (InputRound > SetPointRound ){
-	myPIDRound.SetControllerDirection(REVERSE);
-        myPIDRound.Compute();
-	analogWrite(motorRBA, motorSpeed-OutputRound);
-    	analogWrite(motorLFA, 125); }
-    else if (InputRound < SetPointRound){
-	myPIDRound.SetControllerDirection(DIRECT);
-        myPIDRound.Compute();
-        analogWrite(motorRBA, motorSpeed-OutputRound);
-    	analogWrite(motorLFA, 125); }
-    else if (hitsLeft == hitsRight){
-        analogWrite(motorRBA, 125);
-        analogWrite(motorLFA, 125);}
-  
+    InputRound = hitsLeft - hitsRight ; 	
+    myPIDRound.Compute();
+    analogWrite(motorRBA, motorSpeed-OutputRound);  
   }
   analogWrite(motorRBA, 0);
   raspTX(3);
@@ -112,6 +109,7 @@ void roundAroundCW (){
 
   /////////round CCW/////////////////
   void roundAroundCCW (){
+   myPIDRound.SetMode(AUTOMATIC); 
   raspTX(40);
   temp1=raspRX();   
   raspTX(41);  
@@ -123,22 +121,10 @@ void roundAroundCW (){
   analogWrite(motorRFA, 125);
   analogWrite(motorLBA, 125);
   digitalWrite(controlLed,HIGH);
-  while((hitsLeft<var) &&( hitsRight<var)){  
-    InputRound = hitsLeft - hitsRight ;   
-    if (InputRound > SetPointRound ){
-	myPIDRound.SetControllerDirection(REVERSE);
-        myPIDRound.Compute();
-	analogWrite(motorRFA, motorSpeed-OutputRound);
-    	analogWrite(motorLBA, 125); }
-    else if (InputRound < SetPointRound){
-	myPIDRound.SetControllerDirection(DIRECT);
-        myPIDRound.Compute();
-        analogWrite(motorRFA, motorSpeed-OutputRound);
-    	analogWrite(motorLBA, 125); }
-    else if (hitsLeft == hitsRight){
-        analogWrite(motorRFA, 125);
-        analogWrite(motorLBA, 125);}
- 
+    while((hitsLeft<var) &&  (hitsRight<var)){ 
+      InputRound = hitsLeft - hitsRight ; 	
+      myPIDRound.Compute();
+      analogWrite(motorRFA, motorSpeed-OutputRound);  
   }
   analogWrite(motorRFA, 0);
   raspTX(43);
@@ -148,6 +134,7 @@ void roundAroundCW (){
 
  ////////////Go Straight//////////// 
 void goStraight(){
+  myPIDStraight.SetMode(AUTOMATIC); 
   raspTX(30);  
   temp1=raspRX();  
   raspTX(31);
@@ -155,26 +142,14 @@ void goStraight(){
   var=temp1*250+temp2;
   hitsLeft=0;
   hitsRight=0;
-    
+   InputStraight = hitsLeft - hitsRight ;
   analogWrite(motorRFA, 125);
   analogWrite(motorLFA, 125);
   digitalWrite(controlLed,HIGH);
   while((hitsLeft<var)&&( hitsRight<var)){
-     InputStraight = hitsLeft - hitsRight ;    
-     if (InputStraight > SetPointStraight ){
-	myPIDStraight.SetControllerDirection(REVERSE);
-        myPIDStraight.Compute();
-	analogWrite(motorRFA, motorSpeed-OutputStraight);
-    	analogWrite(motorLFA, 125); }
-    else if (InputStraight < SetPointStraight){
-	myPIDStraight.SetControllerDirection(DIRECT);
-        myPIDStraight.Compute();
-        analogWrite(motorRFA, motorSpeed-OutputStraight);
-    	analogWrite(motorLFA, 125); }
-    else if (hitsLeft == hitsRight){
-        analogWrite(motorRFA, 125);
-        analogWrite(motorLFA, 125);}
-    
+    InputStraight = hitsLeft - hitsRight ;      
+    myPIDStraight.Compute();
+    analogWrite(motorRFA, motorSpeed-OutputStraight);    	
       }
     
     

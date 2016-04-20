@@ -1,22 +1,33 @@
-from ardFunc import roundCW
-from ardFunc import startCom
-from ardFunc import roundCCW
-from ardFunc import goStraight
-from ardFunc import callHits
-#import ardFunc
+from collections import deque
+import numpy as np
+import argparse, cv2, time, serial
+from ardFunc import roundCW, startCom, roundCCW, goStraight, callHits
+from camera_deneme import getCamera, findTarget
+from collections import deque
+from serial import Serial
+from math import acos
+from Decision import *
 from serial import Serial
 import serial
 import time
 
-ser = Serial('/dev/ttyACM1',9600)
+##global camera
+#camera = cv2.VideoCapture(0)
+
+
+#global camera
+ser = Serial('/dev/ttyUSB0',9600)
+
 time.sleep (1)
 startCom ()
 time.sleep (1)
-#roundCW(50)
-#time.sleep (1)
-roundCCW (25)
-goStraight(15)
+while True:
+    result=decision()
+    if(result==1):
+        goStraight(5)
+    time.sleep(10)
 asd=callHits()
-print(asd)
-
+print "asd"
+#camera.release()
+#cv2.destroyAllWindows()
 

@@ -20,39 +20,39 @@ ser = Serial('/dev/ttyUSB0',9600)
 ##locationArray[4] --> current location of the robot 
 def decision ():
     #global camera
-    turnDegree =8
+    turnDegree =7
     global locationArray
     #script,filename = argv
     
     
-    
+    target=open("foo.txt" ,"w")
     locationArray = [0]*5    
     while True:
-        print locationArray[0],locationArray[1],locationArray[2],locationArray[3],locationArray[4]
-        if(locationArray[0]!=0 and locationArray[1]!=0 and locationArray[2]!=0):
+        if(locationArray[0]and locationArray[1] and locationArray[2])!=0:
             break;
         if(locationArray[4]>=52):
             break;
-        xRobot,xTarget,distanceTarget = getCamera()## cameraRobots()
-        #print "xRobot:  " ,xRobot,"  xTarget:  " ,xTarget, "  distanceTarget: " ,distanceTarget 
-        if xRobot !=-10 : ###duzelt burayi kutaya gore!!!
-            updateArray(xRobot+locationArray[4],1)          
-        ##(degree,distance) = getCamera() ##cameraTarget()
+        degree,dummy = getCamera()## cameraRobots()
+        target.write("basladi")
+        target.write("  ")
+        line=locationArray [4]
+        target.write("nsd")
+        target.write("\n")
+        time.sleep (2)
+        if degree !=-1 : ###duzelt burayi kutaya gore!!!
+            updateArray(degree+locationArray[4],1)          
+        (degree,distance) = getCamera() ##cameraTarget()
         
-        if xTarget !=-10 :
-            updateArray(locationArray[4]+xTarget,3)
-            updateArray(distanceTarget,4)
+        if degree !=-1 :
+            updateArray(locationArray[4]+degree,3)
+            updateArray(distance,4)
         roundCW(turnDegree)
         locationArray[4]+= turnDegree
-        if(locationArray[4]>52):
-            locationArray[4]=locationArray[4]%52
     decision=decide2Go()
-   
+    target.close()
     if decision == -1:
-        print "dont go !!"
         return -1;
     else:
-        print "go go go gl hf!!"
         return 1;
 #########Update Array#####
 def updateArray(value,order):
@@ -61,17 +61,16 @@ def updateArray(value,order):
         if(locationArray[0]==0):
             locationArray[0]=value
         else:
-            if(value-locationArray[0])>5:
+            if(locationArray[0]-value)>5:
                 locationArray[1]=value                
     elif (order==3):
-        if(locationArray[2]==0):
-            #print("target value:", value, "order",order )
-            locationArray[2]=value
+        if(locationArray[2]!=0):
+            locationArray=value
         else:
             print 'more than one target is detected ERROR!!'
     elif (order==4):
-        if(locationArray[2]!=0):
-            locationArray[3]=value
+        if(locationArray[3]!=0):
+            locationArray=value
         else:
             print 'more than one target is detected ERROR!!'    
     return 0;    
@@ -116,22 +115,21 @@ def turnDirection (direction):
     global locationArray
     if (direction==1):  ##case#1 between 2 roobts angle is 60 
         if(locationArray[4]-(locationArray[1]+locationArray[0]))/2<26: 
-            roundCCW(int(locationArray[4]-(locationArray[1]+locationArray[0])/2)) 
-            print ("case 1 between 2 rob " ,int (locationArray[4]-(locationArray[1]+locationArray[0])/2))
-        else: 
+            roundCCW(int(locationArray[4]-(locationArray[1]+locationArray[0])/2))
+            print (locationArray[4]-(locationArray[1]+locationArray[0])/2)
+        else:
             roundCW(int( 52 - locationArray[4]+ ((locationArray[1]+locationArray[0])/2) ))
-            print ("case 2 between 2 rob" ,int (52 - locationArray[4]+ ((locationArray[1]+locationArray[0])/2)))
+            print 52 - locationArray[4]+ ((locationArray[1]+locationArray[0])/2)
     else:
         if((locationArray[0]+locationArray[1])%52)<10:
-            roundCW(int(((((locationArray[0]+locationArray[1])%52)/2)-locationArray[4])%52))
-            print ("casse 3 mid point small",int(((((locationArray[0]+locationArray[1])%52)/2)-locationArray[4])%52))
+            roundCW(((((locationArray[0]+locationArray[1])%52)/2)-locationArray[4])%52)
         elif ((locationArray[0]+locationArray[1])%52)>42:
             if( locatoinArray[4]> locationArray[1] + ((locationArray[0]-locationArray[1])%52)/2 ):
-                roundCCW(int( locatoinArray[4]- locationArray[1] - ((locationArray[0]-locationArray[1])%52)/2 ))
-                print ("casse 4 mid point large", int(locatoinArray[4]- locationArray[1] + ((locationArray[0]-locationArray[1])%52)/2))
+                roundCCW(int( locatoinArray[4]- locationArray[1] + ((locationArray[0]-locationArray[1])%52)/2 ))
+                print locatoinArray[4]- locationArray[1] + ((locationArray[0]-locationArray[1])%52)/2
             else:
-                roundCW(int(  locationArray[1]-locatoinArray[4] + ((locationArray[0]-locationArray[1])%52)/2 ))
-                print ("case 5 mid point small " ,int(  locationArray[1]-locatoinArray[4] + ((locationArray[0]-locationArray[1])%52)/2 ))
+                roundCW(int( locatoinArray[4]- locationArray[1] + ((locationArray[0]-locationArray[1])%52)/2 ))
+                print locatoinArray[4]- locationArray[1] + ((locationArray[0]-locationArray[1])%52)/2 
     return 1;
          
     

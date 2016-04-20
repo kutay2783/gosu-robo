@@ -1,7 +1,7 @@
 from serial import Serial
 import serial
 import time
-#ser = Serial('/dev/ttyACM1',9600)
+ser = Serial('/dev/ttyUSB0',9600)
 def startCom():
     ser.write(chr (1))
     while 1:
@@ -53,6 +53,7 @@ def roundCW(hitsNumber):
 def roundCCW(hitsNumber):
     temp=0;
     ser.write(chr (6))
+    print('i send ccw')
     while 1:
         time.sleep (2)
         ardMsg = ser.readline()
