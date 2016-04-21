@@ -25,7 +25,7 @@ while True:
     result=decision()
     if(result==1):
         goStraight(5)
-    time.sleep(10)
+    time.sleep(15)
 asd=callHits()
 print "asd"
 #camera.release()

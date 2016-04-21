@@ -6,6 +6,7 @@ import argparse, cv2, time
 
 #from main import camera
 def getCamera():
+        time1=time.time()
         #global camera
         robotLower = (10, 145, 140)
         robotUpper = (46, 255, 255)
@@ -16,6 +17,7 @@ def getCamera():
         temp=0
         temp2=0
         radius=0
+
         camera = cv2.VideoCapture(0)
         #camera.set(3,320)
         #camera.set(4,240)
@@ -24,7 +26,11 @@ def getCamera():
         xRobot_list=range(10)
         xTarget_list=range(10)
         # keep looping
-        for i in xrange(5):
+        while True:
+                (grabbed, frame)=camera.read()
+                if frame!=None:
+                        break
+        for i in xrange(1):
         	(grabbed, frame) = camera.read()
         	blurred = cv2.GaussianBlur(frame, (11, 11), 0)
         	hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
@@ -47,7 +53,7 @@ def getCamera():
                         if radius > 10:
         			found=found+1
                                 xRobot_list[i]=xRobot
-                                print('xRobot: ', xRobot," y: ", y)
+                                print('xRobot: ', xRobot)
                         else:
                                 xRobot=-10
                 else:
@@ -59,14 +65,14 @@ def getCamera():
         	if len(cntsTarget) > 0:
                         c = max(cntsTarget, key=cv2.contourArea)
                         xTarget,yTarget,wTarget,hTarget= cv2.boundingRect(c)
-                        
+                        xTarget=xTarget+(wTarget/2)
                         center=(int(xTarget), int(yTarget))
-                        dist_guess=int((0.000530837)*((wTarget)**4)-(0.0646349)*((wTarget)**3)+(2.97707)*((wTarget)**2)-(63.2866)*wTarget+586.071)
+                        dist_guess=int((8.71591)*(10**-8)*((wTarget)**4)-(0.0000686939)*((wTarget)**3)+(0.0200612)*((wTarget)**2)-(2.72701)*wTarget+183.004)
                         if wTarget > 10:
                                 xTarget=xTarget+(wTarget/2)
         			found=found+1
                                 xTarget_list[i]=xTarget
-                                print("xTarget: ",int (xTarget)," y: ",int (yTarget)," distance: ",dist_guess)
+                                print("xTarget: ",int (xTarget)," targetMeter: ",dist_guess)
                         else:
                                 xTarget=-10
                 else:
@@ -78,10 +84,18 @@ def getCamera():
         cv2.destroyAllWindows()
         if xTarget!=-10:
                 xTarget=(xTarget-320)//80
+                if xTarget<0:
+                        xTarget=xTarget-1
+                        
         if xRobot!=-10:
                 xRobot=(xRobot-320)//80
-        print ("xRobot:", xRobot,"radiusrobot:",int (radius), "xTarget:" , xTarget, "dist_guess:", dist_guess, )
-       
+                if xRobot<0:
+                        xRobot=xRobot-1
+        print ("xRobot:", xRobot,"radiusrobot:",int (radius), "xTarget:" , xTarget, " targetMeter: ", dist_guess, )
+        time2=time.time()
+        #print time2-time1
+        time1=0
+        time2=0
         return(xRobot,xTarget,dist_guess)
 
 def findTarget():
@@ -97,4 +111,5 @@ def findTarget():
                 roundCW(camera_x_diff/2)
             if camera_x!=(-1) and camera_x_diff<0:
                 roundCCW(camera_x_diff*(-1)/2)
+
 

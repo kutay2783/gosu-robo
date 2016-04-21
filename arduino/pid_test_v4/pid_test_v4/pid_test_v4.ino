@@ -15,7 +15,7 @@ double Input1, Input2, Input3, Input4;
 double  Output1, Output2, Output3, Output4;
 int encoderDifference; 
 int motorSpeedLast;
-long debouncing_time =10;
+long debouncing_time =25;
 volatile unsigned long last_microsLeft, last_microsRight;
 PID myPIDStraight1(&Input1, &Output1, &SetPoint1, 13 , 0.2, 0.5 , DIRECT);
 
@@ -48,15 +48,14 @@ void loop() {
  Input1=hitsLeft-hitsRight;
  myPIDStraight1.Compute();
  analogWrite(motorRFA, motorSpeed-Output1);
- 
- 
-
   Serial.print(hitsLeft);
-  Serial.print(",");
+  Serial.print(", ");
   Serial.print(hitsRight);
-  Serial.print(",");
+  Serial.print(", ");
   Serial.print(Output1);
-  Serial.print(",");
+  Serial.print(", ");
+  Serial.print(motorSpeed-Output1);
+  Serial.print(", ");
   Serial.println(Input1);
   delay(500);
   }
