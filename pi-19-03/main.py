@@ -24,7 +24,7 @@ time.sleep (1)
 while True:
     result=decision()
     if(result==1):
-        goStraight(5)
+        goStraight(50)
     time.sleep(15)
 asd=callHits()
 print "asd"

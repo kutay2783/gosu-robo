@@ -1,9 +1,9 @@
 #include <PID_v1.h>
 
-#define motorRFA 4  // Control pin 1 for motor 1 sol geri
-#define motorRBA 5  // Control pin 2 for motor 1 sol ileri
-#define motorLFA 6  // Control pin 1 for motor 2 sag ileri
-#define motorLBA 7  // Control pin 2 for motor 2 sag geri
+#define motorRFA 4  // sag motor sari pin//sag ileri aktif
+#define motorRBA 5  // sag motor siyah pin
+#define motorLBA 7  // sol motor kirmizi pin
+#define motorLFA 6  // sol motor siyah pin
 #define motorSpeed 125
 
 volatile int hitsRight = 0;

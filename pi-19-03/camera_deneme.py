@@ -2,9 +2,8 @@
 from collections import deque
 import numpy as np
 import argparse, cv2, time
-#from ardFunc import roundCW, startCom, roundCCW, goStraight, callHits
+from ardFunc import roundCW, startCom, roundCCW, goStraight, callHits
 
-#from main import camera
 def getCamera():
         time1=time.time()
         #global camera
@@ -30,7 +29,7 @@ def getCamera():
                 (grabbed, frame)=camera.read()
                 if frame!=None:
                         break
-        for i in xrange(1):
+        for i in xrange(5):
         	(grabbed, frame) = camera.read()
         	blurred = cv2.GaussianBlur(frame, (11, 11), 0)
         	hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
@@ -53,7 +52,7 @@ def getCamera():
                         if radius > 10:
         			found=found+1
                                 xRobot_list[i]=xRobot
-                                print('xRobot: ', xRobot)
+                                print('xRobot: ', xRobot," observation:",i)
                         else:
                                 xRobot=-10
                 else:
@@ -72,7 +71,7 @@ def getCamera():
                                 xTarget=xTarget+(wTarget/2)
         			found=found+1
                                 xTarget_list[i]=xTarget
-                                print("xTarget: ",int (xTarget)," targetMeter: ",dist_guess)
+                                print("xTarget: ",int (xTarget)," targetMeter: ",dist_guess," observation:",i)
                         else:
                                 xTarget=-10
                 else:
