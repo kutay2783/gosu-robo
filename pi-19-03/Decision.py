@@ -5,13 +5,12 @@
 from collections import deque
 import numpy as np
 import argparse, cv2, time, serial
-from ardFunc import roundCW, startCom, roundCCW, goStraight, callHits
-from camera_deneme import getCamera, findTarget
+#from ardFunc import roundCW, startCom, roundCCW, goStraight, callHits
+import camera_deneme 
 from collections import deque
 from serial import Serial
 import math
-
-ser = Serial('/dev/ttyUSB0',9600)
+#ser = Serial('/dev/ttyUSB0',9600)
 ########Main Fuct of DECISION#######
 ##locationArray[0] --> angle between first robot and the initial location
 ##locationArray[1] --> angle between second robot and the initial location
@@ -19,11 +18,10 @@ ser = Serial('/dev/ttyUSB0',9600)
 ##locationArray[3] --> distance of the target from the x pixels of the cylinder
 ##locationArray[4] --> current location of the robot 
 def decision ():
-    #global camera
     turnDegree =6
     global locationArray
     #script,filename = argv
-    
+
     
     
     locationArray = [0]*6
@@ -178,7 +176,7 @@ def turnDirection (direction):
 def getCriticalAngle():
     global locationArray
     targetMeter=(locationArray[3])    
-    criticalAngle=math.acos(43.3/targetMeter)
+    criticalAngle=math.acos(51.96/targetMeter)
     criticalAngle=math.degrees(criticalAngle)
     print "arccos is used:))", criticalAngle
     return criticalAngle*93//360;
@@ -189,15 +187,10 @@ def pixel2MeterTarget (radius):
 
 
 
-
-
-
-
-
-
-
-
-
+#camera_deneme.getCamera()
+camera_deneme.targetLower=(1,2,1)
+camera_deneme.getCamera()
+print camera_deneme.targetLower
 
 
     

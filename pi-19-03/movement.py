@@ -5,18 +5,12 @@ from ardFunc import roundCW, startCom, roundCCW, goStraight, callHits
 from camera_deneme import getCamera, findTarget
 from collections import deque
 from serial import Serial
-from math import acos
-from Decision import *
-from serial import Serial
-import serial
-import time
+import math
 
 ser = Serial('/dev/ttyUSB0',9600)
-time.sleep(1)
-timex=time.time()
-startCom()
-timey=time.time()
-
-print timey-timex
-
-
+def movement():
+    stepMotor()
+    constant=25
+    goStraight(constant)
+        while (calhits()<constant):
+            

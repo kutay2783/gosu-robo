@@ -1,8 +1,8 @@
  
-#define motorLBA 4  // Control pin 1 for motor 1 sol geri
-#define motorLFA 5  // Control pin 2 for motor 1 sol ileri
-#define motorRFA 6  // Control pin 1 for motor 2 sag ileri
-#define motorRBA 7  // Control pin 2 for motor 2 sag geri
+#define motorLBA 5  // Control pin 1 for motor 1 sol geri
+#define motorLFA 4  // Control pin 2 for motor 1 sol ileri
+#define motorRFA 7  // Control pin 1 for motor 2 sag ileri
+#define motorRBA 6  // Control pin 2 for motor 2 sag geri
 
 volatile int hitsLeft = 0;
 volatile int hitsRight = 0;
@@ -12,8 +12,8 @@ volatile unsigned long last_microsLeft, last_microsRight;
 
 void setup() {
   Serial.begin(9600);
-  attachInterrupt(4, countLeft, CHANGE);
-  attachInterrupt(5, countRight, CHANGE); 
+  attachInterrupt(5, countLeft, CHANGE);
+  attachInterrupt(4, countRight, CHANGE); 
   pinMode(0, INPUT);
   pinMode(1, INPUT);
   pinMode(motorLBA, OUTPUT);
@@ -22,7 +22,7 @@ void setup() {
   pinMode(motorRBA, OUTPUT);
   analogWrite(motorLBA, 0);
   analogWrite(motorLFA, 100);
-  analogWrite(motorRFA, 100);
+  analogWrite(motorRFA, 0);
   analogWrite(motorRBA, 0);
   }
 

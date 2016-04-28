@@ -13,7 +13,7 @@ import time
 
 ##global camera
 #camera = cv2.VideoCapture(0)
-
+global asdasd=33
 
 #global camera
 ser = Serial('/dev/ttyUSB0',9600)

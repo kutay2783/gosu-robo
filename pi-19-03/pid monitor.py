@@ -1,9 +1,12 @@
 
-from ardFunc import roundCW, startCom, roundCCW, goStraight, callHits
+#from ardFunc import roundCW, startCom, roundCCW, goStraight, callHits
 from serial import Serial
+import time
 
 ser = Serial('/dev/ttyUSB0',9600)
-goStraight(90)
+#goStraight(90)
+time.sleep(1)
+ser.write(chr (7))
 while True:    
     ardMsg1 = ser.readline()
     ardMsg1 = int (ardMsg1)

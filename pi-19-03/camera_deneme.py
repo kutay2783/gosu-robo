@@ -2,15 +2,17 @@
 from collections import deque
 import numpy as np
 import argparse, cv2, time
-from ardFunc import roundCW, startCom, roundCCW, goStraight, callHits
-
+#from ardFunc import roundCW, startCom, roundCCW, goStraight, callHits
+#global targetLower
+#targetLower=(1,1,1)
 def getCamera():
-        time1=time.time()
-        #global camera
+        global targetLower
+        print targetLower
         robotLower = (10, 145, 140)
         robotUpper = (46, 255, 255)
         targetLower = (60, 95, 65)
         targetUpper = (91, 212, 255)
+        
         found=0
         not_found=0
         temp=0
@@ -18,9 +20,10 @@ def getCamera():
         radius=0
 
         camera = cv2.VideoCapture(0)
-        #camera.set(3,320)
-        #camera.set(4,240)
-        #camera.set(5,10)
+        camera.set(3,320)
+        camera.set(4,240)
+        time1=time.time()
+        #camera.set(5,60)
         dist_guess=0
         xRobot_list=range(10)
         xTarget_list=range(10)
@@ -48,11 +51,11 @@ def getCamera():
                         c = max(cntsRobot, key=cv2.contourArea)
                         ((xRobot, y), radius) = cv2.minEnclosingCircle(c)
                         center=(int(xRobot), int(y))
-                        #dist_guess=(0.000530837)*((radius)**4)-(0.0646349)*((radius)**3)+(2.97707)*((radius)**2)-(63.2866)*radius+586.071
+                        dist_rad=(0.000530837)*((radius)**4)-(0.0646349)*((radius)**3)+(2.97707)*((radius)**2)-(63.2866)*radius+586.071
                         if radius > 10:
         			found=found+1
                                 xRobot_list[i]=xRobot
-                                print('xRobot: ', xRobot," observation:",i)
+                                print('xRobot: ', xRobot," robotMeter: ",dist_rad," observation:",i)
                         else:
                                 xRobot=-10
                 else:
@@ -76,8 +79,7 @@ def getCamera():
                                 xTarget=-10
                 else:
                         xTarget=-10
-        
-                
+            
                               
         camera.release()
         cv2.destroyAllWindows()
@@ -92,9 +94,10 @@ def getCamera():
                         xRobot=xRobot-1
         print ("xRobot:", xRobot,"radiusrobot:",int (radius), "xTarget:" , xTarget, " targetMeter: ", dist_guess, )
         time2=time.time()
-        #print time2-time1
+        print time2-time1
         time1=0
         time2=0
+
         return(xRobot,xTarget,dist_guess)
 
 def findTarget():
@@ -110,5 +113,4 @@ def findTarget():
                 roundCW(camera_x_diff/2)
             if camera_x!=(-1) and camera_x_diff<0:
                 roundCCW(camera_x_diff*(-1)/2)
-
 

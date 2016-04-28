@@ -1,9 +1,9 @@
 #include <PID_v1.h>
 
-#define motorRFA 4  // sag motor sari pin//sag ileri aktif
-#define motorRBA 5  // sag motor siyah pin
-#define motorLBA 7  // sol motor kirmizi pin
-#define motorLFA 6  // sol motor siyah pin
+#define motorRFA 7  // sag motor sari pin//sag ileri aktif
+#define motorRBA 6  // sag motor siyah pin
+#define motorLBA 5  // sol motor kirmizi pin
+#define motorLFA 4  // sol motor siyah pin
 #define motorSpeed 125
 
 volatile int hitsRight = 0;
@@ -17,12 +17,12 @@ int encoderDifference;
 int motorSpeedLast;
 long debouncing_time =100;
 volatile unsigned long last_microsLeft, last_microsRight;
-PID myPIDStraight1(&Input1, &Output1, &SetPoint1, 13 , 0.2, 0.5 , DIRECT);
+PID myPIDStraight1(&Input1, &Output1, &SetPoint1, 13 , 1, 0.5 , DIRECT);
 
 void setup() {
   Serial.begin(9600);
-  attachInterrupt(4, countLeft, CHANGE);
-  attachInterrupt(5, countRight, CHANGE); 
+  attachInterrupt(5, countLeft, CHANGE);
+  attachInterrupt(4, countRight, CHANGE); 
   pinMode(0, INPUT);
   pinMode(1, INPUT);
   pinMode(motorLBA, OUTPUT);
@@ -30,8 +30,8 @@ void setup() {
   pinMode(motorRFA, OUTPUT);
   pinMode(motorRBA, OUTPUT);
   analogWrite(motorLBA, 0);
-  analogWrite(motorLFA, motorSpeed);
-  analogWrite(motorRFA, motorSpeed);
+  analogWrite(motorLFA, 0);
+  analogWrite(motorRFA, 0);
   analogWrite(motorRBA, 0);
   //delay(1000);
   SetPoint1=0;  
@@ -44,20 +44,26 @@ void setup() {
 
 
 void loop() { 
+   while (true){
+     if(raspRX()==7)
+           break; }
+  analogWrite(motorLFA, motorSpeed);
+  analogWrite(motorRFA, motorSpeed);
+  
+  while(hitsLeft<100 || hitsRight<100) {
  //analogWrite(motorLFA, motorSpeed); 
  Input1=hitsLeft-hitsRight;
  myPIDStraight1.Compute();
  analogWrite(motorRFA, motorSpeed-Output1);
-  Serial.print(hitsLeft);
-  Serial.print(", ");
-  Serial.print(hitsRight);
-  Serial.print(", ");
-  Serial.print(Output1);
-  Serial.print(", ");
-  Serial.print(motorSpeed-Output1);
-  Serial.print(", ");
-  Serial.println(Input1);
+  Serial.println(int(hitsLeft));
+  Serial.println(int(hitsRight));
+  Serial.println(int(Output1));
+  //Serial.print(motorSpeed-Output1);
+  Serial.println(int(Input1));
   delay(500);
+  }
+  analogWrite(motorLFA, 0);
+  analogWrite(motorRFA, 0); 
   }
 
 void countLeft()
@@ -77,4 +83,10 @@ void countRight()
 }
 void InterruptRight() {
    hitsRight++; }
-
+   
+int raspRX() {
+  while (true){
+  if(Serial.available()>0){
+       zot = (int) Serial.read();
+       return(zot);
+       } } }

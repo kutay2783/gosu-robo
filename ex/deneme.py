@@ -13,7 +13,7 @@ time1=time.time()
 camera = cv2.VideoCapture(0)
 camera.set(3,320)
 camera.set(4,240)
-camera.set(5,10)
+#camera.set(5,10)
 # keep looping
 while True:
 	(grabbed, frame) = camera.read()
@@ -35,7 +35,7 @@ while True:
 		if radius > 10:
 			cv2.circle(frame, center, int(radius),(0, 0, 0), 2)
 			cv2.circle(frame, center, 5, (0, 0, 255), -1)
-		print('x: ',int (x)," y: ",int (y)," distance: ",radius)
+                        print('x: ',int (x)," y: ",int (y)," distance: ",radius)
 	ttt=ttt+1
 	time2=time.time()
 	if (time2-time1)>1:
@@ -44,11 +44,11 @@ while True:
 		ttt=0
 		time1=0		
 		time1=time.time()
-	cv2.imshow("Frame", frame)
-	cv2.imshow("mask", mask)
-	key = cv2.waitKey(1) & 0xFF
-	if key == ord("q"):
-		break
+	#cv2.imshow("Frame", frame)
+	#cv2.imshow("mask", mask)
+	#key = cv2.waitKey(1) & 0xFF
+	#if key == ord("q"):
+	#	break
 
 camera.release()
 cv2.destroyAllWindows()
