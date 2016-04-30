@@ -9,15 +9,15 @@ def getCamera():
         time.sleep(1)
 	CAMERA_CONS= 512.0      ## for unipolar stepper motor
 	#CAMERA_CONS= 200.0     ## for POLOLU stepper motor
-	WHEEL_CONS = 51.0
+	WHEEL_CONS = 53.0
 	DC2CAMERA_RATIO = WHEEL_CONS/CAMERA_CONS
 	
 	global robotLower 
 	global robotUpper
         robotLower = (10, 145, 140)
         robotUpper = (46, 255, 255)
-        targetLower = (60, 95, 65)
-        targetUpper = (91, 212, 255)
+        targetLower = (70, 46, 56)
+        targetUpper = (85, 255, 245)
         found=0
         not_found=0
         radius=0
@@ -90,22 +90,22 @@ def getCameraForRobots ():
                 (grabbed, frame)=camera.read()
                 if frame!=None:
                         break
-        for i in xrange(1):
-                (grabbed, frame) = camera.read()
-                blurred = cv2.GaussianBlur(frame, (11, 11), 0)
-                hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)								
-                maskRobot = cv2.inRange(hsv, robotLower, robotUpper)
-                maskRobot = cv2.erode(maskRobot, None, iterations=2)
-                maskRobot = cv2.dilate(maskRobot, None, iterations=2)					
-                cntsRobot = cv2.findContours(maskRobot.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[-2]        
-                if len(cntsRobot) > 0:
-                        c = max(cntsRobot, key=cv2.contourArea)
-                        ((xRobot, y), radius) = cv2.minEnclosingCircle(c)
-                        #dist_guess=(0.000530837)*((radius)**4)-(0.0646349)*((radius)**3)+(2.97707)*((radius)**2)-(63.2866)*radius+586.071
-                        if radius < 10:		    
-                                xRobot=-80    
-                else:
-                        xRobot=-80
+        
+        (grabbed, frame) = camera.read()
+        blurred = cv2.GaussianBlur(frame, (11, 11), 0)
+        hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)								
+        maskRobot = cv2.inRange(hsv, robotLower, robotUpper)
+        maskRobot = cv2.erode(maskRobot, None, iterations=2)
+        maskRobot = cv2.dilate(maskRobot, None, iterations=2)					
+        cntsRobot = cv2.findContours(maskRobot.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)[-2]        
+        if len(cntsRobot) > 0:
+                c = max(cntsRobot, key=cv2.contourArea)
+                ((xRobot, y), radius) = cv2.minEnclosingCircle(c)
+                #dist_guess=(0.000530837)*((radius)**4)-(0.0646349)*((radius)**3)+(2.97707)*((radius)**2)-(63.2866)*radius+586.071
+                if radius < 10:		    
+                        xRobot=-80    
+        else:
+                xRobot=-80
         cameraAngle=360/CAMERA_CONS
 	pixel4Slot =int(640//(40/cameraAngle))
         if xRobot !=-80:
@@ -114,13 +114,10 @@ def getCameraForRobots ():
                 print"xrobot ERROR get camera"
 	camera.release()
         cv2.destroyAllWindows()        
-	return xRobot,int(radius)						
-		
-			
-								
-								
-								
-								
+	return xRobot,int(radius)
+							
+
+
 								
 								
 								

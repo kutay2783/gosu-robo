@@ -58,8 +58,14 @@ void loop() {
 
    while (true){
      if(raspRX()==1)
-           break; }
-  raspTX(1);
+           break;
+  }
+  while (true){
+    projeStart=digitalRead(echoPin);
+    if(projeStart==1){
+      raspTX(1);
+      break;}
+  }
 
     while (true){
 
@@ -148,6 +154,7 @@ void goStraight(){
   analogWrite(motorLFA, 125);
   digitalWrite(controlLed,HIGH);
   while((hitsLeft<var)&&( hitsRight<var)){
+   
     if(Serial.available()>0){
          zot = (int) Serial.read();
        if (zot==8)
@@ -162,6 +169,11 @@ void goStraight(){
     InputStraight = hitsLeft - hitsRight ;
     myPIDStraight.Compute();
     analogWrite(motorRFA, motorSpeed-OutputStraight);
+     raspTX(hitsLeft);     
+     raspTX(hitsRight);
+     raspTX(motorSpeed-OutputStraight);
+     raspTX(InputStraight);
+     delay(100);
       }
 
 

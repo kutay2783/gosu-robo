@@ -6,28 +6,41 @@ from serial import Serial
 import camera_deneme
 import Decision  
 import math
-
+import threading
 ser = Serial('/dev/ttyUSB0',9600)
-
+#maxconnections=1
+#semapMove=threading.Semaphore (value=1)
+#event =threading.Event()
+#synevent=threading.Event()
+#lock=threading.Lock()
+#lock4RadiusFirst=threading.Lock()
 def movement():
         global radiusFirst
         global radiusLast
 	global hits
 	hits=0
-        radiusFirst=32		
+ #       event.clear()
+        radiusFirst=32
+		
         initialize=initStep2Robot()
         if initialize==-1:
                 return -1
         constant=115
 	hits=0
 	(hitsLeft,hitsRight) = callHits()
-        
+        #hits = callHits()
         print "call hits",hitsLeft,"right",hitsRight
 
 	radiusLast=radiusFirst
         goStraight(constant)        
          
-  
+        
+ #      gCFR= threading.Thread(target=getCameraForRobots)
+ #      gCFR.start()
+ #      time.sleep(1)
+ #      roM=threading.Thread(target=restOfMovement)
+ #      roM.start()
+ #      event.wait()
 def restOfMovement():
         global radiusFirst
         global xRobot
@@ -35,15 +48,20 @@ def restOfMovement():
         global hits
         global xRobLast
         while True:
-            xRob=xRobot
-                radi=radius 
+   #             synevent.wait()
+                time.sleep(0.5)
+  #              lock.acquire()
+                xRob=xRobot
+                radi=radius
+   #             lock.release()
                 if (radi<radiusFirst and hits>30):
 			print radi
 			stopGoStraight()
+#			event.set()
 			break;
                 print "movament camera enable"
                 (hitsLeft,hitsRight) = callHits()
-
+                #hits = callHits()
                 print "call hits",hitsLeft,"right",hitsRight
                 angleStepper=getAngleStepper(xRob)
                 print "angle stepper",angleStepper
@@ -51,9 +69,32 @@ def restOfMovement():
                 straightenPID(radius,angleStepper,hits)		
                 step2Robot(xRob,angleStepper)
                 print"semap acquire"
-
+#                semapMove.acquire()
 	
 
+def straightenPID(radius,angle,distanceInitial):	
+	global radiusLast
+	setLimit=5
+	Kp=0.04
+	Kd=0.005
+	
+	radiusTable=table4Angle(angle)
+	correctionValue =int(Kp*(radius-radiusTable)+Kd*(radius-radiusLast))
+	if correctionValue>setLimit:
+                correctionValue=setLimit
+        elif correctionValue<(-setLimit):
+                correctionValue=-setLimit
+	print "angle radius PID",angle,radius
+	print "correction value",correctionValue
+	if(correctionValue < 0):
+                print "inc Right",correctionValue
+                #incRight(abs(correctionValue))
+	elif (correctionValue > 0):
+                print "inc Left",correctionValue
+		#incLeft(abs(correctionValue))
+	radiusLast=radius	
+#	synevent.clear()
+	
 def step2Robot(xRob,angle):
         global xRobLast
 	kp=1.0

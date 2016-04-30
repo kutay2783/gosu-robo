@@ -1,8 +1,8 @@
  
-#define I1 3  // Control pin 1 for motor 1
-#define I2 4  // Control pin 2 for motor 1
+#define I1 7  // Control pin 1 for motor 1
+#define I2 6  // Control pin 2 for motor 1
 #define I3 5  // Control pin 1 for motor 2
-#define I4 6  // Control pin 2 for motor 2
+#define I4 4  // Control pin 2 for motor 2
 
 volatile int hits1 = 0;
 volatile int hits2 = 0;
@@ -19,8 +19,8 @@ void setup() {
    pinMode(pin2, INPUT);
   pinMode(pin3, OUTPUT);
   // put your setup code here, to run once:
-  attachInterrupt(4, count1, CHANGE);
-  attachInterrupt(5, count2, CHANGE); 
+  attachInterrupt(5, count1, CHANGE);
+  attachInterrupt(4, count2, CHANGE); 
  
     pinMode(I1, OUTPUT);
     pinMode(I2, OUTPUT);

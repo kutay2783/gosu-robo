@@ -98,45 +98,51 @@ def decide2Go():
                                 turnDirection(1)
                 elif ((locationArray[0]-locationArray[2])%camera_deneme.CAMERA_CONS)<angleCri:  ## critical Angle case
                         if(locationArray[3]<60):###########aciya gore 60 duzeltilmesi lazim!!!!!!!!!!!!!!!!!!#################################
-                                return -1;
                                 print"case1, critical angle called, target too close no need to go"
+                                return -1;
+                                
                         else:
                                 criticalAngle=getCriticalAngle()
                                 if(((locationArray[0]-locationArray[2])%camera_deneme.CAMERA_CONS)+(locationArray[1]-locationArray[0])/2)<criticalAngle:
                                         turnDirection(1)
                                         print"case2, critical angle called, decided to go"
                                 else:
-                                        return -1;
                                         print"case4"
+                                        return -1;
+                        
                 elif((locationArray[2]-locationArray[1])%camera_deneme.CAMERA_CONS)<angleCri :	## critical Angle case
                         if(locationArray[3]<60):
-                                return -1;
                                 print"case5"
+                                return -1;
+                                
                         else:
                                 criticalAngle=getCriticalAngle()
                                 if((locationArray[2]-locationArray[1])%camera_deneme.CAMERA_CONS)+(locationArray[1]-locationArray[0])/2 <criticalAngle:
                                         turnDirection(1)
                                         print"case6"
-                                else:
-                                        return -1;
+                                else:                                        
                                         print"case7"
+                                        return -1;
+                else:
+                        return -1
         else:
-                if ((locationArray[1]-locationArray[2])>angleCri )and ((locationArray[2]-locationArray[0])>angleCri):      
-                        return -1;
+                if ((locationArray[1]-locationArray[2])>angleCri )and ((locationArray[2]-locationArray[0])>angleCri):                              
                         print"case8"
+                        return -1;
         
                 elif (locationArray[2]<=locationArray[0]) or (locationArray[2]>=locationArray[1]):
                         if(locationArray[3]<60):
-                                print "target is inside triangle! ggwp"
-                                return -1;
+                                print "target is inside triangle! ggwp"                                
                                 print"case9"
+                                return -1;
                         else:
                                 turnDirection(2)
                                 print"case10"
                 elif (locationArray[2]-locationArray[0])<= angleCri :
                         if(locationArray[3]<60):
-                                return -1;
+                                
                                 print"case11"
+                                return -1;
                         else:
                                 criticalAngle=getCriticalAngle()
                                 if(locationArray[2]-locationArray[0])+((locationArray[0]-locationArray[1])%camera_deneme.CAMERA_CONS)/2<criticalAngle:
@@ -148,16 +154,18 @@ def decide2Go():
                                                 
                 elif(locationArray[1]-locationArray[2]<=angleCri):
                         if(locationArray[3]<60):
-                                return -1;
                                 print"case14"
+                                return -1;
+                                
                         else:
                                 criticalAngle=getCriticalAngle()
                                 if(locationArray[1]-locationArray[2])+((locationArray[0]-locationArray[1])%camera_deneme.CAMERA_CONS)/2 <criticalAngle:
                                         turnDirection(2)
                                         print"case15"
                                 else:
-                                        return -1;
                                         print"case16"
+                                        return -1;
+                                        
 #### turn Direction Algorith ####
 def turnDirection (direction):	
         global locationArray
