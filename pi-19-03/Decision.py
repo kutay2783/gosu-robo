@@ -20,25 +20,27 @@ ser = Serial('/dev/ttyUSB0',9600)
 ##locationArray[3] --> distance of the target from the x pixels of the cylinder
 ##locationArray[4] --> stepper motor direction
 ##locationArray[5] --> current location of the robot
+##locationArray[6] --> distance of the robot 0
+##lcoationArray[7] --> distance of the robot 1
 def decision (time2Call):  
         global locationArray
         global stepCount
         if time2Call==0:
                 stepCount = 0
-        locationArray =  [0]*6
+        locationArray =  [0]*8
         locationArray[0]=-1
         locationArray[1]=-1
         locationArray[2]=-1
         while True:                       
-                xRobot,xTarget,distanceTarget = camera_deneme.getCamera()
+                xRobot,xTarget,distanceTarget,distanceRobot = camera_deneme.getCamera()
                 turnDegree=camera_deneme.CAMERA_CONS//15
                 if(locationArray[4]>=camera_deneme.CAMERA_CONS+10):
                         break;
                 if xRobot !=-80 : 
-                        updateArray((xRobot+locationArray[4])%camera_deneme.CAMERA_CONS,1)
+                        updateArray((xRobot+locationArray[4])%camera_deneme.CAMERA_CONS,1,distanceRobot)
                 if xTarget !=-80 :
-                        updateArray((distanceTarget),4)
-                        updateArray((locationArray[4]+xTarget)%camera_deneme.CAMERA_CONS,3)
+                        updateArray((distanceTarget),4,0)
+                        updateArray((locationArray[4]+xTarget)%camera_deneme.CAMERA_CONS,3,0)
                 print locationArray[0],locationArray[1],locationArray[2],locationArray[3],locationArray[4],locationArray[5]
                 if( locationArray[1]!=-1 and locationArray[2]!=-1 and locationArray[0]!=-1):
                         break;
@@ -56,19 +58,22 @@ def decision (time2Call):
                 print "go go go gl hf!!"
                 return 1;
 #########Update Array#####
-def updateArray(value,order):
+def updateArray(value,order,distance):
         global locationArray
         if(order==1):           
                 if(locationArray[0]==-1):
                     if(value>int(6*camera_deneme.CAMERA_CONS//7)):
                         locationArray[1]=value
+                        locationRaayp[7]=distanc        ##distance of the robot 1
                         print "update 1"
                     else:
                         locationArray[0]=value
+                        locationArray[6]=distance        ##distance of the robot 0
                         print "update 0"            
                 else:
                         if(value-locationArray[0])>int(camera_deneme.CAMERA_CONS//9)and locationArray[1]==-1:
                                 locationArray[1]=value
+                                locationArray[7]=distance       ##distance of the robot 1
 			else:
 				print "same robot seen again updateArray"   
 				
@@ -85,6 +90,7 @@ def updateArray(value,order):
     
 ########Decide and Turn The Direction######### 
 def decide2Go():
+        
         global locationArray
 	global CAMERA_CONS
 	global WHEEL_CONS	
@@ -174,19 +180,19 @@ def turnDirection (direction):
         else:
             finalDest=(locationArray[0]+locationArray[1])/2
         if finalDest< camera_deneme.CAMERA_CONS/2:
-            hitsReq=int(finalDest*camera_deneme.DC2CAMERA_RATIO)
+            hitsReq=int(round(finalDest*camera_deneme.DC2CAMERA_RATIO))
             roundCW(hitsReq)
             print "roundCW req, step ", hitsReq, finalDest
-	    locationArray[0]=(locationArray[0]-finalDest)%camera_deneme.CAMERA_CONS
-	    locationArray[1]=(locationArray[1]-finalDest)%camera_deneme.CAMERA_CONS
-	    locationArray[2]=(locationArray[2]-finalDest)%camera_deneme.CAMERA_CONS
+	    locationArray[0]=(locationArray[0]-round(finalDest))%camera_deneme.CAMERA_CONS
+	    locationArray[1]=(locationArray[1]-round(finalDest))%camera_deneme.CAMERA_CONS
+	    locationArray[2]=(locationArray[2]-round(finalDest))%camera_deneme.CAMERA_CONS
         else:
-            hitsReq=int((camera_deneme.CAMERA_CONS-finalDest)*camera_deneme.DC2CAMERA_RATIO)
+            hitsReq=int(round((camera_deneme.CAMERA_CONS-finalDest)*camera_deneme.DC2CAMERA_RATIO))
             roundCCW(hitsReq)
             print "roundCCW req, step ", hitsReq, finalDest
-	    locationArray[0]=(locationArray[0]-finalDest)%camera_deneme.CAMERA_CONS
-	    locationArray[1]=(locationArray[1]-finalDest)%camera_deneme.CAMERA_CONS
-	    locationArray[2]=(locationArray[2]-finalDest)%camera_deneme.CAMERA_CONS
+	    locationArray[0]=(locationArray[0]-round(finalDest))%camera_deneme.CAMERA_CONS
+	    locationArray[1]=(locationArray[1]-round(finalDest))%camera_deneme.CAMERA_CONS
+	    locationArray[2]=(locationArray[2]-round(finalDest))%camera_deneme.CAMERA_CONS
     
 def getCriticalAngle():
 	global CAMERA_CONS
@@ -204,6 +210,15 @@ def pixel2MeterTarget (radius): ## bura guncelle yeni target a agore
 
 def stepperCW(degrees,zero): ##check the over turn !!
 	global stepCount
+	finalLoc=(stepCount+degrees)%camera_deneme.CAMERA_CONS
+	if finalLoc<stepCount:
+                stepperCCWManuel(stepCount-finalLoc)                
+        elif finalLoc>stepCount:                
+                stepperCWManuel(finalLoc-stepCount)
+       
+        return 0
+def stepperCWManuel (degrees):
+        global stepCount
 	WaitTime=3.0/1000
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setwarnings(False)
@@ -238,12 +253,19 @@ def stepperCW(degrees,zero): ##check the over turn !!
 		
 		stepCount+=1
 		degrees-=1
-		if (stepCount==camera_deneme.CAMERA_CONS) and (zero==1):
-			goZero()
+
 		
 
 def stepperCCW(degrees,zero): ##check the over turn !!
 	global stepCount
+	finalLoc=(stepCount-degrees)%camera_deneme.CAMERA_CONS
+	if finalLoc>stepCount:
+                stepperCWManuel(finalLoc-stepCount)                
+        elif finalLoc<stepCount:
+                stepperCCWManuel(stepCount-finalLoc)        
+        return 0
+def stepperCCWManuel (degrees):
+        global stepCount
 	WaitTime=3.0/1000
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setup(17,GPIO.OUT)
@@ -276,65 +298,10 @@ def stepperCCW(degrees,zero): ##check the over turn !!
 		time.sleep(WaitTime)
 		stepCount -=1
 		degrees -=1
-		if (stepCount ==0) and (zero==1):
-			goZero()
-
-def goZero():
-        global stepCount
-	if stepCount==0:
-		stepperCW(camera_deneme.CAMERA_CONS,0)
-		
-	elif stepCount==camera_deneme.CAMERA_CONS :
-		stepperCCW (camera_deneme.CAMERA_CONS,0)
-
-def stepperCWPOLULU(degrees,zero): ##check the over turn !!
-	global stepCount
-	WaitTime=5.0/1000
-	GPIO.setmode(GPIO.BCM)
-	GPIO.setwarnings(False)
-	GPIO.setup(17,GPIO.OUT)
-	GPIO.setup(27,GPIO.OUT)	
-	GPIO.output(27,True)	
-	while (degrees>0):
-		GPIO.output(17, True)
-		time.sleep(WaitTime)
-		GPIO.output(17, False)
-		time.sleep(WaitTime)
-		stepCount+=1
-		degrees-=1
-		if (stepCount==200) and (zero==1):
-			goZero()
-		
-
-def stepperCCWPOLULU(degrees,zero): ##check the over turn !!
-	global stepCount
-	WaitTime=5.0/1000
-	GPIO.setmode(GPIO.BCM)
-	GPIO.setwarnings(False)
-	GPIO.setup(17,GPIO.OUT)
-	GPIO.setup(27,GPIO.OUT)	
-	GPIO.output(27,False)
-	while (degrees>0):
-		GPIO.output(17, True)
-		time.sleep(WaitTime)
-		GPIO.output(17, False)
-		time.sleep(WaitTime)
-		stepCount -=1
-		degrees -=1
-		if (stepCount ==0) and (zero==1):
-			goZero()
-
-def goZeroPOLULU():
-        global stepCount
-	if stepCount==0:
-		stepperCW(200,0)
-		
-	elif stepCount==200 :
-		stepperCCW (200,0)
-		
-
 
 
 def makeStepperZero():
 	global stepCount
 	stepperCCW(stepCount,0)
+	
+

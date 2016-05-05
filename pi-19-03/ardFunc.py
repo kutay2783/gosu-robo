@@ -5,10 +5,10 @@ ser = Serial('/dev/ttyUSB0',9600)
 def startCom():
     ser.write(chr (1))
     while 1:
-        time.sleep (1)
+        #time.sleep (1)
         ardMsg = ser.readline()
         ardMsg = int (ardMsg)
-        #print(ardMsg)
+        print(ardMsg)
         if (ardMsg==1):
             print('Comm started')
             break;

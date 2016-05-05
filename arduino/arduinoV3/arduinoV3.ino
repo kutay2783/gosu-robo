@@ -13,14 +13,17 @@
 #define motorRBA 6  // sag motor siyah pin
 #define motorLBA 5  // sol motor kirmizi pin
 #define motorLFA 4  // sol motor siyah pin
+#define encRight 9
+#define encLeft  8
 #define motorSpeed 125
 volatile int hitsRight = 0;
 volatile int hitsLeft = 0;
 long distance;
-int raspMessage,roundDirection,var, zot, temp1, temp2,projeStart;
+int raspMessage,roundDirection,var, zot, temp1, temp2,condition;
 double SetPointStraight=0, SetPointRound=0;
 double InputStraight, InputRound;
 double  OutputStraight, OutputRound;
+int encLeftValue,encRightValue;
 int encoderDifference,motorSpeedLast=motorSpeed;
 volatile unsigned long last_microsRight, last_microsLeft;
 long debouncing_time =100;
@@ -62,23 +65,14 @@ void loop() {
   raspTX(1);
 
     while (true){
-
-        switch (raspRX()){
-        case 5:  roundAroundCW();
-                  break;
-        case 6:  roundAroundCCW();
-                  break;
-        case 7:  goStraight();
-                  break;
-        case 8:  incRightRasp();
-                  break;
-        case 9:  incLeftRasp();
-                  break;
-        case 10: returnHits();
-                  break;
-        }
+      condition=raspRX();
+      if      (condition==5 )  roundAroundCW();
+      else if (condition==6 )  roundAroundCCW();
+      else if (condition==7 )  goStraight();
+      else if (condition==8 )  incRightRasp();
+      else if (condition==9 )  incLeftRasp();
+      else if (condition==10)  returnHits();        
      }
-
 }
 ////////////Round CW///////////
 void roundAroundCW (){
@@ -90,6 +84,12 @@ void roundAroundCW (){
   var=temp1*250+temp2;
   hitsLeft=0;
   hitsRight=0;
+  encRightValue = analogRead(encRight);
+  encLeftValue = analogRead(encLeft);
+  if (encRightValue>300||encRightValue<700)
+    hitsRight--;
+  if (encLeftValue>300||encLeftValue<700)
+    hitsLeft--;
   InputRound = hitsLeft - hitsRight ;
   analogWrite(motorRBA, 125);
   analogWrite(motorLFA, 125);
@@ -117,6 +117,12 @@ void roundAroundCW (){
   hitsLeft=0;
   hitsRight=0;
   InputRound = hitsLeft - hitsRight ;
+  encRightValue =analogRead(encRight);
+  encLeftValue =analogRead(encLeft);
+  if (encRightValue>300||encRightValue<700)
+    hitsRight--;
+  if (encLeftValue>300||encLeftValue<700)
+    hitsLeft--;
   analogWrite(motorRFA, 125);
   analogWrite(motorLBA, 125);
   digitalWrite(controlLed,HIGH);

@@ -6,125 +6,21 @@ from serial import Serial
 import camera_deneme
 import Decision  
 import math
-import threading
+
 ser = Serial('/dev/ttyUSB0',9600)
-#maxconnections=1
-#semapMove=threading.Semaphore (value=1)
-#event =threading.Event()
-#synevent=threading.Event()
-#lock=threading.Lock()
-#lock4RadiusFirst=threading.Lock()
+
 def movement():
         global radiusFirst
         global radiusLast
 	global hits
 	hits=0
- #       event.clear()
-        radiusFirst=32
-		
+        radiusFirst=32		
         initialize=initStep2Robot()
         if initialize==-1:
                 return -1
-        constant=115
-	hits=0
-	(hitsLeft,hitsRight) = callHits()
-        #hits = callHits()
-        print "call hits",hitsLeft,"right",hitsRight
-
-	radiusLast=radiusFirst
+        constant=107
         goStraight(constant)        
-         
-        
- #      gCFR= threading.Thread(target=getCameraForRobots)
- #      gCFR.start()
- #      time.sleep(1)
- #      roM=threading.Thread(target=restOfMovement)
- #      roM.start()
- #      event.wait()
-def restOfMovement():
-        global radiusFirst
-        global xRobot
-        global radius
-        global hits
-        global xRobLast
-        while True:
-   #             synevent.wait()
-                time.sleep(0.5)
-  #              lock.acquire()
-                xRob=xRobot
-                radi=radius
-   #             lock.release()
-                if (radi<radiusFirst and hits>30):
-			print radi
-			stopGoStraight()
-#			event.set()
-			break;
-                print "movament camera enable"
-                (hitsLeft,hitsRight) = callHits()
-                #hits = callHits()
-                print "call hits",hitsLeft,"right",hitsRight
-                angleStepper=getAngleStepper(xRob)
-                print "angle stepper",angleStepper
-                hits = (hitsLeft+hitsRight)/2
-                straightenPID(radius,angleStepper,hits)		
-                step2Robot(xRob,angleStepper)
-                print"semap acquire"
-#                semapMove.acquire()
-	
-
-def straightenPID(radius,angle,distanceInitial):	
-	global radiusLast
-	setLimit=5
-	Kp=0.04
-	Kd=0.005
-	
-	radiusTable=table4Angle(angle)
-	correctionValue =int(Kp*(radius-radiusTable)+Kd*(radius-radiusLast))
-	if correctionValue>setLimit:
-                correctionValue=setLimit
-        elif correctionValue<(-setLimit):
-                correctionValue=-setLimit
-	print "angle radius PID",angle,radius
-	print "correction value",correctionValue
-	if(correctionValue < 0):
-                print "inc Right",correctionValue
-                #incRight(abs(correctionValue))
-	elif (correctionValue > 0):
-                print "inc Left",correctionValue
-		#incLeft(abs(correctionValue))
-	radiusLast=radius	
-#	synevent.clear()
-	
-def step2Robot(xRob,angle):
-        global xRobLast
-	kp=1.0
-	kd=0.01
-	eConst=1
-	print"step2Robot xRobot",xRob
-	if xRobot==-80:
-                print "step2Robot error"
-        
-	rotate=2+kp*xRob+kd*(xRob-xRobLast)
-	if rotate>10:
-                rotate=10
-        elif rotate<-10:
-                rotate=-10
-	if rotate>0:
-                Decision.stepperCCW(rotate,1)
-                Decision.locationArray[4]-= rotate
-                print"step2Robot CCW",rotate
-                if(Decision.locationArray[4]>camera_deneme.CAMERA_CONS):
-                        Decision.locationArray[4]=locationArray[4]%camera_deneme.CAMERA_CONS
-	elif rotate<0:
-                rotate=abs(rotate)
-		Decision.stepperCW (rotate,1)
-		Decision.locationArray[4]+= rotate
-		print"step2Robot CW",rotate
-                if(Decision.locationArray[4]>camera_deneme.CAMERA_CONS):
-                        Decision.locationArray[4]=locationArray[4]%camera_deneme.CAMERA_CONS
-	
-	
-	
+        	
 def initStep2Robot():
         global radiusFirst
         global xRobLast
@@ -160,18 +56,18 @@ def initStep2Robot():
                 if xrbt4Init==-80:
                         print "init step hatasi"
                         return -1
-                elif xrbt4Init>-5 and xrbt4Init<5:
-                        print "robot detected ez initStep"
+                elif xrbt4Init>-4 and xrbt4Init<4:
+                        print "robot detected ez initStep",xrbt4Init
                         radiusFirst=radius4Init
                         xRobLast=xrbt4Init
                         break
                 else:
-                        kp=1
+                        kp=0.5
                         rotate=kp*xrbt4Init
                         if rotate>0:
                                 rotate=int(abs(rotate)*camera_deneme.DC2CAMERA_RATIO)
 				if rotate<2:
-					rotate=2
+					rotate=1
                                 #Decision.stepperCW(rotate,1)
                                 roundCW(rotate)
                                 Decision.locationArray[0]=(Decision.locationArray[0]-rotate)%camera_deneme.CAMERA_CONS        
@@ -180,12 +76,12 @@ def initStep2Robot():
                                 #Decision.locationArray[4]+= rotate
                                 if(Decision.locationArray[4]>camera_deneme.CAMERA_CONS):
                                         Decision.locationArray[4]=Decision.locationArray[4]%camera_deneme.CAMERA_CONS
-                                print "case5 cw initstep2"
+                                print "case5 cw initstep2",rotate
                         elif rotate<0:
 				
                                 rotate=int(abs(rotate)*camera_deneme.DC2CAMERA_RATIO)
 				if rotate<2:
-					rotate=2
+					rotate=1
 				
                                 roundCCW(rotate)
                                 Decision.locationArray[0]=(Decision.locationArray[0]-rotate)%camera_deneme.CAMERA_CONS        
@@ -197,19 +93,9 @@ def initStep2Robot():
                                         Decision.locationArray[4]=Decision.locationArray[4]%camera_deneme.CAMERA_CONS
                                 print "case6 ccw initstep2",rotate
                 
-                #elif xRobot>2 :
-                #        Decision.stepperCW(1,1)
-                #elif xRobot<-2:
-                #        Decision.stepperCCW(1,1)
+                
 	return 1       
-                
-
-        
-
-
-
-        
-                
+             
 def getAngleStepper(xRobot):## orta nokta hatasi var!!!!!!
         
 	return xRobot+Decision.locationArray[4];
