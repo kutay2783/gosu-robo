@@ -138,9 +138,7 @@ void roundAroundCW (){
  }
 
  ////////////Go Straight////////////
-void goStraight(){
-
-  
+void goStraight(){  
   raspTX(30);
   temp1=raspRX();
   raspTX(31);
@@ -169,8 +167,6 @@ void goStraight(){
     myPIDStraight.Compute();
     analogWrite(motorRFA, motorSpeed-OutputStraight);
       }
-
-
       analogWrite(motorRFA, 0);
       digitalWrite(controlLed,LOW);      
       analogWrite(motorLFA, 0);

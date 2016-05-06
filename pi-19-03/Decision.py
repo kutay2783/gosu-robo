@@ -64,7 +64,7 @@ def updateArray(value,order,distance):
                 if(locationArray[0]==-1):
                     if(value>int(6*camera_deneme.CAMERA_CONS//7)):
                         locationArray[1]=value
-                        locationRaayp[7]=distanc        ##distance of the robot 1
+                        locationArray[7]=distance        ##distance of the robot 1
                         print "update 1"
                     else:
                         locationArray[0]=value

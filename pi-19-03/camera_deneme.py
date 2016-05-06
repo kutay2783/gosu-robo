@@ -7,7 +7,7 @@ def getCamera():
 	global WHEEL_CONS 
 	global DC2CAMERA_RATIO
         time.sleep(1)
-	CAMERA_CONS= 512.0      ## for unipolar stepper motor
+	CAMERA_CONS= 517.0      ## for unipolar stepper motor
 	#CAMERA_CONS= 200.0     ## for POLOLU stepper motor
 	WHEEL_CONS = 51.0
 	DC2CAMERA_RATIO = WHEEL_CONS/CAMERA_CONS
@@ -69,11 +69,12 @@ def getCamera():
         cv2.destroyAllWindows()
 	cameraAngle=360/CAMERA_CONS
 	pixel4Slot =(640/(40/cameraAngle))
+	#print "xRobot before:", xRobot
         if xTarget!=-80:
             xTarget= round((xTarget-(320-pixel4Slot//2))//pixel4Slot)	                        
         if xRobot!=-80:
             xRobot= round((xRobot-(320-pixel4Slot//2))//pixel4Slot)           
-        print ("xRobot:", xRobot,"radiusrobot:",int (radius), "xTarget:" , xTarget, " targetMeter: ", dist_guess, )
+        print ("xRobot:", xRobot,"distRobot:",int(distRobot), "xTarget:" , xTarget, " targetMeter: ", dist_guess, )
         return(xRobot,xTarget,dist_guess,distRobot)
 
 def getCameraForRobots ():
@@ -114,7 +115,8 @@ def getCameraForRobots ():
                 print"xrobot ERROR get camera"
 	camera.release()
         cv2.destroyAllWindows()        
-	return xRobot,int(radius)
+	return xRobot,int(round(radius))
+
 							
 
 
